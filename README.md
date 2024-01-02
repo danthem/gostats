@@ -5,7 +5,40 @@ The current version supports three backend types: [Influxdb](https://www.influxd
 The InfluxDB backend sends query results to an InfluxDB server. The Prometheus backend spawns an http Web server per-cluster that serves the metrics via the "/metrics" endpoint.
 The Grafana dashboards provided with the data insights project may be used without modification with the Go version of the collector.
 
-## Installation Instructions
+## Docker Install Instructions
+
+A Dockerfile is included to allow Gostats to run in a docker container. From within the working directory run:
+* $ `docker build --tag gostats .`
+
+After build is complete you should see the image in `docker image ls`. The configuration file (idic.toml) should be in /app , *if it does not exist the container will not run*. 
+
+To as an example to run:
+* $ `docker run -d -v /dockergostats/:/app -t gostats`
+
+Here I've made a bind mount to /dockergostats on my local FS, this is where I place my idic.toml configuration file (which I create based on the example configuration provided (`example_isi_data_insights_d.toml`).
+
+If pushing data to influxdb this is all that's needed, no need to expose any ports. However if want to use the prometheus exporter instead you will need to expose ports.
+
+As an example I've made the following adjustments to the `idic.toml` configuration:
+Global:
+`stats_processor = "prometheus"`
+I also enabled the prometheus service discovery on port 9999.
+```
+[prom_http_sd]
+enabled = true
+sd_port = 9999
+```
+
+and finally for my monitored cluster(s) I add a prometheus_port, in my example I use 9998:
+
+`prometheus_port = 9998`
+
+For this I need to expose ports for SD and the cluster's prometheus port:
+* $ `docker run -d -p 9999:9999 -p 9998:9998 -v /dockergostats/:/app -t gostats`
+
+I can now access `/metrics` on `http://localhost:9998/metrics`
+
+## Local Install Instructions
 
 * $ go build
 
