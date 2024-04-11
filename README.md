@@ -10,7 +10,7 @@ The Grafana dashboards provided with the data insights project may be used witho
 A Dockerfile is included to allow you to build a container for Gostats. From within the working directory run:
 * $ `docker build --tag gostats .`
 
-After build is complete you will have a container image (see `docker image ls`). For the docker container to run the configuration file must exist (idic.toml), this file is to be placed within /app in the container. 
+After build is complete you will have a container image (see `docker image ls`). For the docker container to run the configuration file must exist (idic.toml), this file is to be placed within /app in the container, without this file the container will immediately exit so make sure to create it before running the container. 
 
 Here's an example an example to run the container:
 * $ `docker run -d -v /dockergostats/:/app -t gostats`
@@ -37,6 +37,9 @@ For this to work I also need to expose ports for SD and as well as the cluster's
 * $ `docker run -d -p 9999:9999 -p 9998:9998 -v /dockergostats/:/app -t gostats`
 
 `/metrics` for my cluster is now available at  `http://localhost:9998/metrics`
+
+## Troubleshooting container
+If the container immediately exits check the exit status and review with `docker inspect` and `docker logs`. If container starts but is not appearing to work as expected review the logfile "gostats.log" which is located in /app . Most of the time issues are related to not being able to reach the PowerScale cluster or permission issues.
 
 ## Local Install Instructions
 
