@@ -7,36 +7,36 @@ The Grafana dashboards provided with the data insights project may be used witho
 
 ## Docker Install Instructions
 
-A Dockerfile is included to allow Gostats to run in a docker container. From within the working directory run:
+A Dockerfile is included to allow you to build a container for Gostats. From within the working directory run:
 * $ `docker build --tag gostats .`
 
-After build is complete you should see the image in `docker image ls`. The configuration file (idic.toml) should be in /app , *if it does not exist the container will not run*. 
+After build is complete you will have a container image (see `docker image ls`). For the docker container to run the configuration file must exist (idic.toml), this file is to be placed within /app in the container. 
 
-To as an example to run:
+Here's an example an example to run the container:
 * $ `docker run -d -v /dockergostats/:/app -t gostats`
 
-Here I've made a bind mount to /dockergostats on my local FS, this is where I place my idic.toml configuration file (which I create based on the example configuration provided (`example_isi_data_insights_d.toml`).
+Here I've made a bind mount to /dockergostats on my local FS, *this is where I place my idic.toml configuration file* (which I've created based on the example configuration provided (`example_isi_data_insights_d.toml`).
 
-If pushing data to influxdb this is all that's needed, no need to expose any ports. However if want to use the prometheus exporter instead you will need to expose ports.
+If pushing data to *influxdb* this is all that's needed, no need to expose any ports. However if you want to use the *Prometheus exporter* instead you will need to expose ports.
 
-As an example I've made the following adjustments to the `idic.toml` configuration:
+As an example for using the Prometheus exporter I've made the following adjustments to the `idic.toml` configuration:
 Global:
 `stats_processor = "prometheus"`
-I also enabled the prometheus service discovery on port 9999.
+I've also enabled the prometheus service discovery on port 9999 (note however that the use of the discovery service is optional):
 ```
 [prom_http_sd]
 enabled = true
 sd_port = 9999
 ```
 
-and finally for my monitored cluster(s) I add a prometheus_port, in my example I use 9998:
+For my monitored cluster(s) I add a prometheus_port for each cluster, in my example I have one cluster and use port 9998:
 
 `prometheus_port = 9998`
 
-For this I need to expose ports for SD and the cluster's prometheus port:
+For this to work I also need to expose ports for SD and as well as the cluster's prometheus port:
 * $ `docker run -d -p 9999:9999 -p 9998:9998 -v /dockergostats/:/app -t gostats`
 
-I can now access `/metrics` on `http://localhost:9998/metrics`
+`/metrics` for my cluster is now available at  `http://localhost:9998/metrics`
 
 ## Local Install Instructions
 
