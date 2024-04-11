@@ -38,6 +38,8 @@ For this to work I also need to expose ports for SD and as well as the cluster's
 
 `/metrics` for my cluster is now available at  `http://localhost:9998/metrics`
 
+I have published a container on dockerhub: `danthem/gostats`, the build is not (yet) automated so to make sure you have the latest version you can build it yourself from the github repo.
+
 ## Troubleshooting container
 If the container immediately exits check the exit status and review with `docker inspect` and `docker logs`. If container starts but is not appearing to work as expected review the logfile "gostats.log" which is located in /app . Most of the time issues are related to not being able to reach the PowerScale cluster or permission issues.
 
